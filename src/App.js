@@ -1,5 +1,6 @@
 import React from 'react';
 import Die from './components/Die';
+import Timer from './components/Timer';
 import './styles.css';
 import { nanoid } from 'nanoid'
 import Confetti from 'react-confetti';
@@ -12,16 +13,25 @@ function App() {
     //our state that changes when the game ends. 
     const [tenzies, setTenzies] = React.useState(false)
 
+    //state to start and stop timer
+    const [timer, setTimer] = React.useState(false)
+
+    
 
     //useEffect in order to keep our two states in sync 
     React.useEffect(() => {
       const firstValue = dice[0].value 
+      const isNotAllHeld = dice.every((die) => (die.isHeld === false))
       const isAllHeld = dice.every((die) => (die.isHeld === true))
       const isAllSame = dice.every((die) => (die.value === firstValue))
       if (isAllHeld && isAllSame) {
         setTenzies(true)
+      } else if (isNotAllHeld) {
+        setTimer(false)
+      } else if (isNotAllHeld !== true) {
+        setTimer(true)
       }
-    }
+    } 
     
     , [dice])
 
@@ -75,23 +85,40 @@ function App() {
       })
     }
 
+    //function to time the game
+    function timerStart() {
+
+    }
+
+    function button() {
+      if (timer) {
+        return (<button className="button-reroll" onClick={newGame}>Roll Again</button>)
+      } else if (tenzies) {
+        return (<button className="button-reroll" onClick={newGame}>New Game</button>)
+      } else {
+        return (<button className="button-reroll" onClick={newDice}>Roll Again</button>)
+      }
+    } 
+
     //mapping over state to turn our array of objects into JSX elements
     const diceArray = dice.map((die) => (<Die key={die.id} value={die.value} isHeld={die.isHeld} holdDice={() => holdDice(die.id)}/>))
 
   return (
+    <div>
     <main className="main">
       <h1 className="header">Tenzies</h1>
       <h3 className="header-instructions">Roll until all dice are the same. Click each die to freeze it at its current value between rolls.</h3>
       {tenzies && <Confetti></Confetti>}
       <div className="die-container">
         {diceArray}
-        {
-        tenzies ? 
-        <button className="button-reroll" onClick={newGame}>New Game</button> : 
-        <button className="button-reroll" onClick={newDice}>Roll Again</button>
-        }
+        {button()}
       </div>
+      {
+      timer ? <Timer date={Date.now}/>
+      : <h3 className="header-instructions-2">The game will start when you click your first die.</h3> 
+      }
     </main>
+    </div>
   );
 }
 
