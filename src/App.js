@@ -23,45 +23,48 @@ function App() {
   //TIMER CODE   
 
     //two states to hold time when game starts and when game finishes
-    const [time, setTime] = React.useState()
-    const [now, setNow] = React.useState()
+    const [time, setTime] = React.useState(0)
+    const [start, setStart] = React.useState(false)
  
     //useRef will help us run a timer without rerendering our entire component
-    const intervalRef = React.useRef(null)
+    // const intervalRef = React.useRef(null)
 
-    let stopTimer
 
-    
+    React.useEffect(() => {
+      let interval
+      if (start) {
+        interval = setInterval(() => {
+          setTime(prevTime => prevTime + 10)
+        }, 10)
+      } else {
+        clearInterval(interval);
+      }
+
+      return () => clearInterval(interval)
+    }, [start])
 
     function startGame() {
-      setTime(Date.now())
-      setNow(Date.now())
-      stopTimer = setInterval(() => (
-          setTime(Date.now())
-      ), 10);
-    } 
+      setStart(true)
+    }
+
+    function gameWon() {
+      setStart(false)
+    }
 
     function endGame() {
-      clearInterval(stopTimer)
-      setTime((prevState) => (prevState))
-      setNow((prevState) => (prevState))
+      setStart(false)
+      setTime(0)
     }
-      // 
 
-    //   if (isNotAllHeld) {
-    //     setDisplayTimer(false)
-    //   } else {
-    //     setDisplayTimer(true)
-    //     setTime(Date.now())
-    //     setNow(Date.now())
-    //     intervalRef.current = setInterval(() => {
-    //     setTime(Date.now())
-    //       }, 10)
-    //   }
-    // }
+    // function startGame() {
+    //   setTime(Date.now())
+    //   setNow(Date.now())
+    //   stopTimer = setInterval(() => (
+    //       setTime(Date.now())
+    //   ), 10);
+    // } 
 
-  //END OF TIMER CODE      
-    
+  
     //useEffect in order to keep our two states in sync 
     React.useEffect(() => {
       const firstValue = dice[0].value 
@@ -128,9 +131,7 @@ function App() {
     //mapping over state to turn our array of objects into JSX elements
     const diceArray = dice.map((die) => (<Die key={die.id} value={die.value} isHeld={die.isHeld} holdDice={() => holdDice(die.id)}/>))
 
-    //timeValue made to string to assign to JSX element
-    let timePassed = (time - now) / 1000;
-    
+
   return (
     <div>
     <main className="main">
@@ -140,10 +141,17 @@ function App() {
       <div className="die-container">
         {diceArray}
       </div>
+   
+        <h3>
+          <span>{("0" + Math.floor(time / 60000) % 60).slice(-2)}</span>
+          <span>{("0" + Math.floor(time / 1000) % 60).slice(-2)}</span>
+          <span>{("0" + (time / 10) % 1000).slice(-2)}</span>
+        </h3>
+    
       <div className="button-container">
-          <button className="button-reroll" onClick={newDice}>Roll Again</button>
-          <button className="button-reroll" onClick={endGame}> Start Game </button>
-          <button className="button-reroll" onClick={startGame}>{timePassed}</button>
+          <button className="button-reroll" onlick={newDice}>Roll Again</button>
+          <button className="button-reroll" onClick={startGame}> sStart Game </button>
+          <button className="button-reroll" onClick={gameWon}>something</button>
       </div>
    
       {/* <h3 className="header-instructions-2">The game will start when you click your first die.</h3>  */}
