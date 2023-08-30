@@ -26,7 +26,7 @@ export default function Die(props) {
         return (
                 dotTypeD = {gridArea: "d"},
 
-                dot = <div className="die-face" style={styles} onClick={props.holdDice}>
+                dot = <div className="die-face" style={styles} onClick={props.checkTimer ? props.holdDice : () => {}}>
                         <span style={dotTypeD} className="dot"></span>
                       </div>
                 )
@@ -34,7 +34,7 @@ export default function Die(props) {
         return (
                 dotTypeA = {gridArea: "a"}, dotTypeG = {gridArea: "g"},
 
-                dot = <div className="die-face" style={styles} onClick={props.holdDice}>
+                dot = <div className="die-face" style={styles} onClick={props.checkTimer ? props.holdDice : () => {}}>
                         <span style={dotTypeA} className="dot"></span>
                         <span style={dotTypeG} className="dot"></span>
                       </div>
@@ -43,7 +43,7 @@ export default function Die(props) {
         return (
                 dotTypeA = {gridArea: "a"}, dotTypeD = {gridArea: "d"}, dotTypeG = {gridArea: "g"}, 
 
-                dot = <div className="die-face" style={styles} onClick={props.holdDice}>
+                dot = <div className="die-face" style={styles} onClick={props.checkTimer ? props.holdDice : () => {}}>
                          <span style={dotTypeA} className="dot"></span>
                          <span style={dotTypeD} className="dot"></span>
                          <span style={dotTypeG} className="dot"></span>
@@ -53,7 +53,7 @@ export default function Die(props) {
         return (
                 dotTypeA = {gridArea: "a"}, dotTypeB = {gridArea: "b"},  dotTypeF = {gridArea: "f"},  dotTypeG = {gridArea: "g"},
 
-                dot = <div className="die-face" style={styles} onClick={props.holdDice}>
+                dot = <div className="die-face" style={styles} onClick={props.checkTimer ? props.holdDice : () => {}}>
                         <span style={dotTypeA} className="dot"></span>
                         <span style={dotTypeB} className="dot"></span>
                         <span style={dotTypeF} className="dot"></span>
@@ -66,7 +66,7 @@ export default function Die(props) {
                 dotTypeG = {gridArea: "g"},
                 
 
-                dot = <div className="die-face" style={styles} onClick={props.holdDice}>
+                dot = <div className="die-face" style={styles} onClick={props.checkTimer ? props.holdDice : () => {}}>
                         <span style={dotTypeA} className="dot"></span>
                         <span style={dotTypeB} className="dot"></span>
                         <span style={dotTypeD} className="dot"></span>
@@ -79,7 +79,7 @@ export default function Die(props) {
                 dotTypeA = {gridArea: "a"}, dotTypeB = {gridArea: "b"},  dotTypeC = {gridArea: "c"},  dotTypeE = {gridArea: "e"},
                 dotTypeF = {gridArea: "f"}, dotTypeG = {gridArea: "g"},
 
-                dot = <div className="die-face" style={styles} onClick={props.holdDice}>
+                dot = <div className="die-face" style={styles} onClick={props.checkTimer ? props.holdDice : () => {}}>
                         <span style={dotTypeA} className="dot"></span>
                         <span style={dotTypeB} className="dot"></span>
                         <span style={dotTypeC} className="dot"></span>

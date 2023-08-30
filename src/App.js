@@ -1,35 +1,37 @@
 import React from 'react';
 import Die from './components/Die';
-import Timer from './components/Timer';
 import './styles.css';
 import { nanoid } from 'nanoid'
 import Confetti from 'react-confetti';
 
 function App() {
 
+    //our state that displays the time
+    const [time, setTime] = React.useState(0)
+
+    //our state that starts and stops the timer. timer starts if true. 
+    const [start, setStart] = React.useState(false)
+
     //our state for dice objects. This array of objects will hold information we can use to build our dice components. 
     const [dice, setDice] = React.useState(randomArray())
 
     //our state that changes when the game ends. 
     const [tenzies, setTenzies] = React.useState(false)
-
-    //state to display timer
-    const [displayTimer, setDisplayTimer] = React.useState(false)
-
-    //issues
-    // clearInterval does not seem to be stopping my timer
-    // figure out which button will do what. Do we need another button to show the time?
-  
-  //TIMER CODE   
-
-    //two states to hold time when game starts and when game finishes
-    const [time, setTime] = React.useState(0)
-    const [start, setStart] = React.useState(false)
  
-    //useRef will help us run a timer without rerendering our entire component
-    // const intervalRef = React.useRef(null)
 
+    const timer =    
+        <h3 className="timer">
+          <span>{("0" + Math.floor(time / 60000) % 60).slice(-2)}</span>
+          <span>.</span>
+          <span>{("0" + Math.floor(time / 1000) % 60).slice(-2)}</span>
+          <span>.</span>
+          <span>{("0" + (time / 10) % 1000).slice(-2)}</span>
+        </h3>
 
+    const [highScore, setHighScore] = React.useState(timer)
+
+    //this useEffect is super clever. Triggers when start changes. If timer = t, then we set the interval to add 10 to time every 10 milliseconds. 
+    //If timer = f, we clear interval and stop the time from continuously adding.   
     React.useEffect(() => {
       let interval
       if (start) {
@@ -43,54 +45,69 @@ function App() {
       return () => clearInterval(interval)
     }, [start])
 
-    function startGame() {
-      setStart(true)
-    }
 
-    function gameWon() {
-      setStart(false)
-    }
-
-    function endGame() {
-      setStart(false)
-      setTime(0)
-    }
-
-    // function startGame() {
-    //   setTime(Date.now())
-    //   setNow(Date.now())
-    //   stopTimer = setInterval(() => (
-    //       setTime(Date.now())
-    //   ), 10);
-    // } 
-
-  
-    //useEffect in order to keep our two states in sync 
+    //useEffect checks every die for win condition. All dice must be held and have the same value.  
     React.useEffect(() => {
       const firstValue = dice[0].value 
       const isAllHeld = dice.every((die) => (die.isHeld === true))
       const isAllSame = dice.every((die) => (die.value === firstValue))
       if (isAllHeld && isAllSame) {
           setTenzies(true)
+          setStart(false)
         } 
       } 
       , [dice])
 
-    //function to give us an array of objects to set to state. Uses for loop to create 10 objects. 
+
+    //starts game. Goes on start game btn.
+    function startGame() {
+      setStart(true)
+      setDice((prevDice) => {
+        return (
+          prevDice.map((die) => (
+          {
+           value: Math.ceil(Math.random() * 6),
+           isHeld: false,
+           id: nanoid(),
+          }
+          ))
+        )
+      })
+    }
+
+    //function to reset the game. Goes on new game btn. 
+    function newGame() {
+      setTime(0)
+      setTenzies(false)
+      setStart(false)
+      setDice((prevDice) => {
+        return (
+          prevDice.map((die) => (
+          {
+           value: Math.ceil(Math.random() * 6),
+           isHeld: false,
+           id: nanoid(),
+          }
+          ))
+        )
+      })
+    }
+
+    //function to give us an array of objects to set to state. Uses for loop to create an array of 10 objects. We map over later. 
     function randomArray() {
       const diceValueArray = []
       for (let i = 0; i < 10; i++) {
         diceValueArray.push({
           value: Math.ceil(Math.random() * 6),
           isHeld: false,
-          id: nanoid()
+          id: nanoid(),
         })
      }
 
      return diceValueArray
     }
     
-    //function for button to reset dice values
+    //function for button to reset dice values. Goes on Roll Again btn.
     function newDice() {
       setDice((prevDice) => {
         return prevDice.map((die) => {
@@ -110,27 +127,12 @@ function App() {
       })  
     }
 
-    //function to reset the game 
-    function newGame() {
-      setTenzies(false)
-      setDice((prevDice) => {
-        return (
-          prevDice.map((die) => (
-          {
-           value: Math.ceil(Math.random() * 6),
-           isHeld: false,
-           id: nanoid()
-          }
-          ))
-        )
-      })
-
-      setDisplayTimer((prevState) => (!prevState))
-    }
-
     //mapping over state to turn our array of objects into JSX elements
-    const diceArray = dice.map((die) => (<Die key={die.id} value={die.value} isHeld={die.isHeld} holdDice={() => holdDice(die.id)}/>))
+    const diceArray = dice.map((die) => (
+      <Die key={die.id} value={die.value} isHeld={die.isHeld} holdDice={() => holdDice(die.id)} checkTimer={start}/>
+    ))
 
+      
 
   return (
     <div>
@@ -142,20 +144,13 @@ function App() {
         {diceArray}
       </div>
    
-        <h3>
-          <span>{("0" + Math.floor(time / 60000) % 60).slice(-2)}</span>
-          <span>{("0" + Math.floor(time / 1000) % 60).slice(-2)}</span>
-          <span>{("0" + (time / 10) % 1000).slice(-2)}</span>
-        </h3>
+        {timer}
     
       <div className="button-container">
-          <button className="button-reroll" onlick={newDice}>Roll Again</button>
-          <button className="button-reroll" onClick={startGame}> sStart Game </button>
-          <button className="button-reroll" onClick={gameWon}>something</button>
-      </div>
-   
-      {/* <h3 className="header-instructions-2">The game will start when you click your first die.</h3>  */}
-      
+         {tenzies || start ? <button className="button-reroll" onClick={newGame}>New Game</button> :
+          <button className="button-reroll" onClick={startGame}> Start Game </button>}
+          <button className="button-reroll" onClick={start ? newDice : () => {}}>Roll Again</button>
+      </div>   
     </main>
     </div>
   );
