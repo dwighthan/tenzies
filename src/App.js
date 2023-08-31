@@ -1,5 +1,6 @@
 import React from 'react';
 import Die from './components/Die';
+import HighScore from './components/HighScore'
 import './styles.css';
 import { nanoid } from 'nanoid'
 import Confetti from 'react-confetti';
@@ -18,17 +19,60 @@ function App() {
     //our state that changes when the game ends. 
     const [tenzies, setTenzies] = React.useState(false)
  
+    //current highScore
+    React.useEffect(() => {
+      localStorage.setItem("score", JSON.stringify(123049))
+      const minuteTest = JSON.parse(localStorage.getItem("score"))
+      console.log(minuteTest)
+    })  
 
-    const timer =    
-        <h3 className="timer">
-          <span>{("0" + Math.floor(time / 60000) % 60).slice(-2)}</span>
-          <span>.</span>
-          <span>{("0" + Math.floor(time / 1000) % 60).slice(-2)}</span>
-          <span>.</span>
-          <span>{("0" + (time / 10) % 1000).slice(-2)}</span>
-        </h3>
+      // React.useEffect(() => {
 
-    const [highScore, setHighScore] = React.useState(timer)
+      //   if (tenzies && !start) {
+      //     const highScoreMinutes = JSON.parse(localStorage.getItem("minuteScore"))
+      //     const highScoreSeconds = JSON.parse(localStorage.getItem("secondScore"))
+      //     const highScoreMilliSeconds = JSON.parse(localStorage.getItem("millSecondScore"))
+        
+      //     const currentMinutes = (0 + Math.floor(time / 60000) % 60).slice(-2)
+      //     const currentSeconds = (0 + Math.floor(time / 1000) % 60).slice(-2)
+      //     const currentMilliseconds = (0 + (time / 10) % 1000).slice(-2)
+          
+      //     if (highScoreMinutes >= currentMinutes && highScoreSeconds >= currentSeconds && highScoreMilliSeconds >= currentMilliseconds) {
+      //       localStorage.setItem("minuteScore", JSON.stringify(currentMinutes))
+      //       localStorage.setItem("secondScore", JSON.stringify(currentSeconds))
+      //       localStorage.setItem("millisecondScore", JSON.stringify(currentMilliseconds))
+      //     }
+      //   } 
+  
+      //   }, [tenzies, time, start])
+
+
+      React.useEffect(() => {
+
+        if (tenzies && !start) {
+          const highScore = JSON.parse(localStorage.getItem("score"))
+      
+          const score = time
+          
+          if (highScore >= score) {
+            localStorage.setItem("minuteScore", JSON.stringify(score))
+          }
+        } 
+  
+        }, [tenzies, time, start])
+
+    //useEffect checks every die for win condition. All dice must be held and have the same value.  
+    React.useEffect(() => {
+      const firstValue = dice[0].value 
+      const isAllHeld = dice.every((die) => (die.isHeld === true))
+      const isAllSame = dice.every((die) => (die.value === firstValue))
+      if (isAllHeld && isAllSame) {
+          setTenzies(true)
+          setStart(false)
+        } 
+ 
+      } 
+      , [dice])
 
     //this useEffect is super clever. Triggers when start changes. If timer = t, then we set the interval to add 10 to time every 10 milliseconds. 
     //If timer = f, we clear interval and stop the time from continuously adding.   
@@ -44,19 +88,6 @@ function App() {
 
       return () => clearInterval(interval)
     }, [start])
-
-
-    //useEffect checks every die for win condition. All dice must be held and have the same value.  
-    React.useEffect(() => {
-      const firstValue = dice[0].value 
-      const isAllHeld = dice.every((die) => (die.isHeld === true))
-      const isAllSame = dice.every((die) => (die.value === firstValue))
-      if (isAllHeld && isAllSame) {
-          setTenzies(true)
-          setStart(false)
-        } 
-      } 
-      , [dice])
 
 
     //starts game. Goes on start game btn.
@@ -132,6 +163,11 @@ function App() {
       <Die key={die.id} value={die.value} isHeld={die.isHeld} holdDice={() => holdDice(die.id)} checkTimer={start}/>
     ))
 
+    const minutes = <span>{("0" + Math.floor(time / 60000) % 60).slice(-2)}</span>    
+    const seconds = <span>{("0" + Math.floor(time / 1000) % 60).slice(-2)}</span>
+    const milliSeconds = <span>{("0" + (time / 10) % 1000).slice(-2)}</span>     
+
+
       
 
   return (
@@ -143,9 +179,16 @@ function App() {
       <div className="die-container">
         {diceArray}
       </div>
-   
-        {timer}
-    
+  
+        <HighScore minutes={minutes} seconds={seconds} milliSeconds={milliSeconds}/>
+        <h3 className="timer">
+          {minutes}
+          <span>.</span>
+          {seconds}
+          <span>.</span>
+          {milliSeconds}
+        </h3>
+
       <div className="button-container">
          {tenzies || start ? <button className="button-reroll" onClick={newGame}>New Game</button> :
           <button className="button-reroll" onClick={startGame}> Start Game </button>}
