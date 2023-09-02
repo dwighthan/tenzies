@@ -18,48 +18,25 @@ function App() {
 
     //our state that changes when the game ends. 
     const [tenzies, setTenzies] = React.useState(false)
- 
-    //current highScore
-    React.useEffect(() => {
-      localStorage.setItem("score", JSON.stringify(123049))
-      const minuteTest = JSON.parse(localStorage.getItem("score"))
-      console.log(minuteTest)
-    })  
 
-      // React.useEffect(() => {
+    const [highScore, setHighScore] = React.useState(localStorage.getItem("highScore") || "")
+    const [secondHighScore, setSecondHighScore] = React.useState(localStorage.getItem("secondHighScore") || "")
+    const [thirdHighScore, setThirdHighScore] = React.useState(localStorage.getItem("thirdHighScore") || "")
 
-      //   if (tenzies && !start) {
-      //     const highScoreMinutes = JSON.parse(localStorage.getItem("minuteScore"))
-      //     const highScoreSeconds = JSON.parse(localStorage.getItem("secondScore"))
-      //     const highScoreMilliSeconds = JSON.parse(localStorage.getItem("millSecondScore"))
-        
-      //     const currentMinutes = (0 + Math.floor(time / 60000) % 60).slice(-2)
-      //     const currentSeconds = (0 + Math.floor(time / 1000) % 60).slice(-2)
-      //     const currentMilliseconds = (0 + (time / 10) % 1000).slice(-2)
-          
-      //     if (highScoreMinutes >= currentMinutes && highScoreSeconds >= currentSeconds && highScoreMilliSeconds >= currentMilliseconds) {
-      //       localStorage.setItem("minuteScore", JSON.stringify(currentMinutes))
-      //       localStorage.setItem("secondScore", JSON.stringify(currentSeconds))
-      //       localStorage.setItem("millisecondScore", JSON.stringify(currentMilliseconds))
-      //     }
-      //   } 
-  
-      //   }, [tenzies, time, start])
-
-
+    //our useEffect dealing with storing highscores in localStorage
       React.useEffect(() => {
 
         if (tenzies && !start) {
-          const highScore = JSON.parse(localStorage.getItem("score"))
-      
-          const score = time
-          
-          if (highScore >= score) {
-            localStorage.setItem("minuteScore", JSON.stringify(score))
+          if (time <= highScore || !highScore) {
+            setHighScore(time)
+          } else if ((time >= highScore && time <= secondHighScore) || (!secondHighScore && time >= highScore)) {
+            setSecondHighScore(time)
+          } else if ((time >= secondHighScore && time <= thirdHighScore) || (!thirdHighScore && time >= secondHighScore)) {
+            setThirdHighScore(time)
           }
         } 
   
-        }, [tenzies, time, start])
+        }, [tenzies, time, start, highScore, secondHighScore, thirdHighScore])
 
     //useEffect checks every die for win condition. All dice must be held and have the same value.  
     React.useEffect(() => {
@@ -70,7 +47,6 @@ function App() {
           setTenzies(true)
           setStart(false)
         } 
- 
       } 
       , [dice])
 
@@ -167,9 +143,6 @@ function App() {
     const seconds = <span>{("0" + Math.floor(time / 1000) % 60).slice(-2)}</span>
     const milliSeconds = <span>{("0" + (time / 10) % 1000).slice(-2)}</span>     
 
-
-      
-
   return (
     <div>
     <main className="main">
@@ -180,7 +153,8 @@ function App() {
         {diceArray}
       </div>
   
-        <HighScore minutes={minutes} seconds={seconds} milliSeconds={milliSeconds}/>
+        <HighScore highScore={highScore} secondHighScore={secondHighScore} thirdHighScore={thirdHighScore}/>
+
         <h3 className="timer">
           {minutes}
           <span>.</span>
