@@ -17,8 +17,8 @@ export default function HighScore(props) {
 
     return(
         <div className="high-score-table">
-            <h1>High Score Table</h1>
-            <ol>
+            <ol className="scores">
+            <h2 className="scores-header">High Scores</h2>    
                 <li>
                     {firstMinutes}
                     <span>.</span>

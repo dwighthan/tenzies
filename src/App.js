@@ -146,14 +146,12 @@ function App() {
   return (
     <div>
     <main className="main">
+    {tenzies && <Confetti></Confetti>}
     <h1 className="header">Tenzies</h1>
-      <h3 className="header-instructions">Roll until all dice are the same. Click each die to freeze it at its current value between rolls.</h3>
-      {tenzies && <Confetti></Confetti>}
+
       <div className="die-container">
         {diceArray}
       </div>
-  
-        <HighScore highScore={highScore} secondHighScore={secondHighScore} thirdHighScore={thirdHighScore}/>
 
         <h3 className="timer">
           {minutes}
@@ -168,6 +166,21 @@ function App() {
           <button className="button-reroll" onClick={startGame}> Start Game </button>}
           <button className="button-reroll" onClick={start ? newDice : () => {}}>Roll Again</button>
       </div>   
+
+      <h3 className="header-instructions">
+        Roll until all dice are the same. Click each die to freeze it at its current value between rolls.
+        <br></br>
+        <br></br>
+        Press "Start Game" to begin. Try to get the fastest time possible! 
+        <br></br>
+        <br></br>
+        You can reset the game by pressing "New Game" once the game has started
+      
+        <HighScore highScore={highScore} secondHighScore={secondHighScore} thirdHighScore={thirdHighScore}/>
+      </h3>
+
+
+
     </main>
     </div>
   );
